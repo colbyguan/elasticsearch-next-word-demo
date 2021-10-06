@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+  <div id="app">
+    <form>
+        <label for="search">Search:</label><br>
+        <input v-on:input="handleInput" v-model="prefix" type="text" id="search" name="search"><br>
+      </form> 
+      <ol>
+        <li v-for="result in results">
+          {{ result }}
+        </li>
+      </ol>
+  </div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            results: [],
+            prefix: '',
+        },
+        methods: {
+            handleInput: async function () {
+                const resp = await fetch('http://localhost:8000/search', {method: 'POST', body: JSON.stringify({'prefix': this.prefix})})
+                this.results = await resp.json();
+            }
+        }
+    })
+</script>
+</body>
+</html>

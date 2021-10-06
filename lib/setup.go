@@ -19,7 +19,7 @@ func CreateTextFile() {
 }
 
 func PopulateIndex() {
-	data, err := os.ReadFile("./data.txt")
+	data, err := os.ReadFile("./data/data.txt")
 	Check(err)
 	searches := strings.Split(string(data), "\n")
 	client, err := elastic.NewClient()
@@ -33,10 +33,16 @@ func PopulateIndex() {
 		Check(err)
 		fmt.Printf("delete acknowledgement: %v\n", deleteIndex.Acknowledged)
 	}
+	resp, err := client.CreateIndex(INDEX).BodyString(`{"mappings" : {
+            "properties" : {
+                "search" : { "type" : "keyword" }
+    }}}`).Do(context.Background())
+	Check(err)
+	fmt.Printf("create index: %v\n", resp.Acknowledged)
 
 	bulkRequest := client.Bulk()
 	for id, search := range searches {
-		bulkRequest.Add(elastic.NewBulkIndexRequest().Index(INDEX).Type(TYPE).Id(strconv.Itoa(id)).Doc(SearchDoc{search}))
+		bulkRequest.Add(elastic.NewBulkIndexRequest().Index(INDEX).Id(strconv.Itoa(id)).Doc(SearchDoc{search}))
 	}
 	bulkResponse, err := bulkRequest.Do(context.Background())
 	Check(err)
@@ -73,9 +79,7 @@ func cleanSearch(search string) (string, bool) {
 	}
 	var sb strings.Builder
 	for _, char := range search {
-		if !unicode.IsLetter(char) && !unicode.IsNumber(char) {
-			sb.WriteRune(' ')
-		} else {
+		if unicode.IsLetter(char) || !unicode.IsNumber(char) {
 			sb.WriteRune(char)
 		}
 	}

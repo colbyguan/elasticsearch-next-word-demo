@@ -9,8 +9,9 @@ import (
 
 func main() {
 	args := os.Args[1:]
-	if len(args) == 0 {
+	if len(args) == 0 || args[0] == "serve" {
 		fmt.Println("no args, running default")
+		lib.NewServer().Start()
 	} else if args[0] == "populate" {
 		lib.PopulateIndex()
 	} else if args[0] == "bootstrap" {
