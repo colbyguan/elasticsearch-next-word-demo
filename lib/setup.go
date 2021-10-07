@@ -19,9 +19,6 @@ func CreateTextFile() {
 }
 
 func PopulateIndex() {
-	data, err := os.ReadFile("./data/data.txt")
-	Check(err)
-	searches := strings.Split(string(data), "\n")
 	client, err := elastic.NewClient()
 	Check(err)
 
@@ -40,14 +37,23 @@ func PopulateIndex() {
 	Check(err)
 	fmt.Printf("create index: %v\n", resp.Acknowledged)
 
+	data, err := os.ReadFile("./data/data.txt")
+	Check(err)
+	searches := strings.Split(string(data), "\n")
+
 	bulkRequest := client.Bulk()
 	for id, search := range searches {
-		bulkRequest.Add(elastic.NewBulkIndexRequest().Index(INDEX).Id(strconv.Itoa(id)).Doc(SearchDoc{search}))
+		bulkRequest.Add(elastic.NewBulkIndexRequest().
+			Index(INDEX).
+			Id(strconv.Itoa(id)).
+			Doc(SearchDoc{search}))
 	}
 	bulkResponse, err := bulkRequest.Do(context.Background())
 	Check(err)
 	indexed := bulkResponse.Indexed()
-	fmt.Printf("parsed %d searches, indexed %d searches\n", len(searches), len(indexed))
+	fmt.Printf("parsed %d searches, indexed %d searches\n",
+		len(searches),
+		len(indexed))
 }
 
 func getSearchesFromLocalHtml() []string {
@@ -64,7 +70,7 @@ func getSearchesFromLocalHtml() []string {
 	}
 	keys := make([]string, len(uniques))
 	i := 0
-	for s, _ := range uniques {
+	for s := range uniques {
 		keys[i] = s
 		i++
 	}

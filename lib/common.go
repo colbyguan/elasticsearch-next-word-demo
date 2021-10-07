@@ -1,7 +1,8 @@
 package lib
 
 const INDEX = "searches"
-const TYPE = "search"
+const SEPARATOR_STR = " "
+const SEPARATOR_RUNE = ' '
 
 type SearchDoc struct {
 	Search string `json:"search"`
