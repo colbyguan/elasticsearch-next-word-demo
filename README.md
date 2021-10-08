@@ -1,5 +1,5 @@
 # elasticsearch-next-word-demo
-This repo is meant to accompany my tutorial on [word-by-word autocomplete using Elasticsearch and Painless scripting here]
+This repo is meant to accompany my tutorial on [word-by-word autocomplete using Elasticsearch and Painless scripting here](https://blog.colby.cc/2021/10/02/es-next-words)
 
 If you have Go and Elasticsearch installed, you should be able to run this and be good to go!
 ```
